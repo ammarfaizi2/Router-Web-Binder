@@ -37,21 +37,12 @@ class OutputFixer
 		foreach ($this->out as &$val) {
 			$tmp = $val;
 			$tmp = explode(">", $tmp, 2);
-			$tmpd = isset($tmp[1]) ? $tmp[1] : "";
-			if (strpos($tmp[0], "action=\"") !== false) {
-				$tmp = explode("action=\"", $tmp[0]);
-				$tmp = explode("\"", $tmp[1], 2)[0];
-				if (substr($tmp, 0, 7) === "http://") {
-					$val = explode("http://", $tmp, 2);
-					$val = explode("/", $val[1], 2);
-					$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-					$val = "action=\"".($n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val)."\"".$tmpd;
-				} elseif (substr($tmp, 0, 8) === "https://") {
-					$val = explode("https://", $tmp, 2);
-					$val = explode("/", $val[1], 2);
-					$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-					$val = "action=\"".($n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val)."\"".$tmpd;
-				}
+			if (strpos($tmp[0], "action=\"") !== false) {				
+				$val = explode("action=\"", $val, 2);
+				$url = explode("\"", $val[1], 2);
+				$val[1] = $url[1];
+				$url = str_replace($this->host, $_SERVER['HTTP_HOST'], $url[0]);
+				$val = "action=\"".$url."\"".$val[1];
 			}
 		}
 		unset($val);
