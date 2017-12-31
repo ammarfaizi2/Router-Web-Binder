@@ -33,56 +33,37 @@ class OutputFixer
 
 	private function fixForm()
 	{
-		$this->out = explode("<form", $this->out);
-		foreach ($this->out as &$val) {
-			$tmp = $val;
-			$tmp = explode(">", $tmp, 2);
-			if (strpos($tmp[0], "action=\"") !== false) {				
+		$out = explode("<form", $this->out);
+		$fo = $out[0];
+		unset($out[0]);
+		foreach ($out as &$val) {
+			if (strpos($val, "action=\"")) {
 				$val = explode("action=\"", $val, 2);
-				$url = explode("\"", $val[1], 2);
-				$val[1] = $url[1];
-				$url = str_replace($this->host, $_SERVER['HTTP_HOST'], $url[0]);
-				$val = "action=\"".$url."\"".$val[1];
+				$val = explode("\"", $val[1], 2);
+				$vvv = str_replace($this->host, $_SERVER['HTTP_HOST'], $val[0]);
+				$val = "<form action=\"".$vvv."\"".$val[1];
 			}
 		}
-		unset($val);
-		$this->out = implode("<form ", $this->out);
+
+		$this->out = $fo.implode($out);
 	}
 
 	private function fixHref()
 	{
-		$this->out = explode(" href=", $this->out);
-		foreach ($this->out as &$val) {
-			$tmp = $val;
-			if (substr($tmp, 0, 7) === "http://") {
-				$val = explode("http://", $val, 2);
-				$val = explode("/", $val[1], 2);
-				$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-				$val = $n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val;
-			} elseif (substr($tmp, 0, 8) === "https://") {
-				$val = explode("https://", $val, 2);
-				$val = explode("/", $val[1], 2);
-				$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-				$val = $n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val;
+		$out = explode(" href=\"", $this->out);
+		$fo = $out[0];
+		unset($out[0]);
+		foreach ($out as &$val) {
+			$val = explode("\"", $val, 2);
+			if (substr($val[0], 0, 8) === "https://") {
+				$fpo = $val[1];
+				$val = substr($val[0], 8);
+				$val = explode("/", $val, 2);
+				$val = "https://".str_replace($this->host, $_SERVER['HTTP_HOST'], $val[0])."/".$val[1]."\"".$fpo;
+			} else {
+				$val = implode("\"", $val);
 			}
 		}
-		$this->out = implode(" href=", $this->out);
-		$this->out = explode(" href=\"", $this->out);
-		foreach ($this->out as &$val) {
-			$tmp = $val;
-			if (substr($tmp, 0, 7) === "http://") {
-				$val = explode("http://", $val, 2);
-				$val = explode("/", $val[1], 2);
-				$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-				$val = $n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val;
-			} elseif (substr($tmp, 0, 8) === "https://") {
-				$val = explode("https://", $val, 2);
-				$val = explode("/", $val[1], 2);
-				$val = str_ireplace($this->host, $_SERVER['HTTP_HOST'], $val[0], $n).(isset($val[1]) ? "/".$val[1] : "");
-				$val = $n > 0 ? $_SERVER['REQUEST_SCHEME']."://".$val : $val;
-			}
-		}
-		unset($val, $tmp);
-		$this->out = implode(" href=\"", $this->out);
+		$this->out = $fo.implode(" href=\"", $out);
 	}
 }
