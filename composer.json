@@ -1,0 +1,16 @@
+{
+    "name": "ammarfaizi2/route-web-binder",
+    "description": "Route Web Binder",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ammar Faizi",
+            "email": "ammarfaizi2@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "ammarfaizi2/php-curl": "^0.0.2"
+    }
+}
